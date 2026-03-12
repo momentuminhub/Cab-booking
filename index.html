@@ -57,25 +57,33 @@ async function bookRide() {
     return;
   }
 
-  try {
-    await fetch('https://sheetdb.io/api/v1/k8fl6g6apeoiw', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        data: [{ "Name": name, "Pickup": pickup, "Drop": drop, "Driver": driverPhone, "Seat": seat }]
-      })
-    });
+try {
+await fetch('https://sheetdb.io/api/v1/k8f16g6apeoiw';, {
+method: 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify({
+data: [{
+"Name": name,
+"Pickup": pickup,
+"Drop": drop,
+"Driver": driverPhone,
+"Seat": seat
+}]
+})
+});
 
-    let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${seat}`;
-    window.open(`https://wa.me/${driverPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-  } catch (error) {
-    alert("Something went wrong. Please check your internet.");
-  }
+let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${seat}`;
+window.open(`https://wa.me/${driverPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+} catch (error) {
+console.error(error);
+alert("Something went wrong. Please check your internet.");
 }
+   }
     </script>
 </body>
 
 </html>
+
 
 
 
