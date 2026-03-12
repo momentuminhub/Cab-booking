@@ -44,15 +44,26 @@
             selectedSeat = element.innerText;
         }
 
-        function bookRide() {
-            let name = document.getElementById('name').value;
-            let pickup = document.getElementById('pickup').value;
-            let drop = document.getElementById('drop').value;
-            let driverPhone = document.getElementById('driverSelect').value;
+       async function bookRide() {
+    let name = document.getElementById('name').value;
+    let pickup = document.getElementById('pickup').value;
+    let drop = document.getElementById('drop').value;
+    let driverPhone = document.getElementById('driverSelect').value;
+    let seat = selectedSeat; 
 
-            if(!name || !selectedSeat) {
-                alert("Please fill name and pick a seat!");
-                return;
+    // 1. Send data to Google Sheets
+    await fetch('https://sheetdb.io/api/v1/oqmdb9d5q1xb9', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+            data: [{ "Name": name, "Pickup": pickup, "Drop": drop, "Driver": driverPhone, "Seat": seat }]
+        })
+    });
+
+    // 2. Open WhatsApp
+    let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${seat}`;
+    window.open(`https://wa.me/${driverPhone}?text=${encodeURIComponent(msg)}`);
+}
             }
 
             let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${selectedSeat}`;
@@ -60,4 +71,5 @@
         }
     </script>
 </body>
+
 </html>
