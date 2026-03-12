@@ -39,11 +39,12 @@
 let selectedSeat = "";
 
 function selectSeat(element) {
-  document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
-  element.classList.add('selected');
-  selectedSeat = element.innerText;
+document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
+element.classList.add('selected');
+// Using .trim() ensures we capture clean text
+selectedSeat = element.innerText.trim();
+console.log("Captured Seat:", selectedSeat);
 }
-
 async function bookRide() {
   let name = document.getElementById('name').value;
   let pickup = document.getElementById('pickup').value;
@@ -75,6 +76,7 @@ async function bookRide() {
 </body>
 
 </html>
+
 
 
 
