@@ -1,89 +1,123 @@
-<!DOCTYPE html>
 <html>
 <head>
     <title>Cab Booking</title>
     <style>
-        /* Light grey background for the whole page */
-    body { font-family: sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f4f4f4; }
-    
-    /* The white box that holds your form */
-    .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    
-    input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-    
-    /* Makes the inputs glow yellow when you tap them */
-    input:focus, select:focus { border: 2px solid #ffdd00; outline: none; }
-    
-    .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-    .seat { padding: 15px; background: #eee; text-align: center; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-    .seat.selected { background: #ffdd00; border: 2px solid #000; }
-    
-    button { background-color: #000; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
-    button:hover { background-color: #333; }
-    button:disabled { background-color: #aaa; }
+        body { font-family: sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f4f4f4; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        input:focus { border: 2px solid #ffdd00; outline: none; }
+        
+        .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+ .seat-grid-2 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .seat { display: flex; justify-content: center; align-items: center; padding: 15px; background: #eee; text-align: center; cursor: pointer; border-radius: 8px; font-weight: bold; border: 2px solid transparent; }
+        
+        /* High-visibility selection color */
+        .seat.selected { background: #ffdd00 !important; border: 2px solid #000 !important; }
+        
+        button { background-color: #000; color: white; font-weight: bold; cursor: pointer; border: none; margin-top: 10px; }
+        button:active { background-color: #444; }
     </style>
 </head>
 <body>
 
-    <h2>Book Your Ride</h2>
-    <input type="text" id="name" placeholder="Name">
-    <input type="text" id="pickup" placeholder="Pickup Location">
-    <input type="text" id="drop" placeholder="Drop Location">
+    <div class="card">
+        <h2>Book Your Ride</h2>
+        <input type="text" id="name" placeholder="Name">
+        <input type="text" id="pickup" placeholder="Pickup Location">
+        <input type="text" id="drop" placeholder="Drop Location">
+	
+        <label>Select Driver:</label>
+        <select id="driverSelect">
+            <option value="919103754740">Driver A</option>
+            <option value="919123456789">Driver B</option>
+        </select>
 
-    <label>Select Driver:</label>
-    <select id="driverSelect">
-        <option value="919103754740">Driver A</option>
-        <option value="919123456789">Driver B</option>
-    </select>
-
-    <label>Select Seat:</label>
-    <div class="seat-grid">
-        <div class="seat" onclick="selectSeat(this)">Window Left</div>
-        <div class="seat" onclick="selectSeat(this)">Window Right</div>
+        <label>Select Seat(s):</label>
+        <div class="seat-grid">
+            <div class="seat" onclick="selectSeat(this)">Front Left</div>
+            <div> <img src="wheel.svg" width=40px height=40px/>
+		</div>
+        </div>
+ <div class="seat-grid-2">
+		<div class="seat" onclick="selectSeat(this)">Left</div>
+            	<div class="seat" onclick="selectSeat(this)">Center</div>
+            	<div class="seat" onclick="selectSeat(this)">Right</div>
+	     </div>
+	<input type="text" id="phone" placeholder="Mobile No.">
+        <button id="bookBtn" onclick="bookRide()">Confirm Booking</button>
     </div>
 
-    <button onclick="bookRide()">Confirm Booking</button>
-
     <script>
-        let selectedSeat = "";
+        // Use a simple array to track seats
+        var selectedSeats = [];
 
         function selectSeat(element) {
-            document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedSeat = element.innerText.trim();
+            var seatName = element.innerText.trim();
+            var index = selectedSeats.indexOf(seatName);
+
+            if (index > -1) {
+                // If found, remove it
+                selectedSeats.splice(index, 1);
+                element.classList.remove('selected');
+                console.log("Removed: " + seatName);
+            } else {
+                // If not found, add it
+                selectedSeats.push(seatName);
+                element.classList.add('selected');
+                console.log("Added: " + seatName);
+            }
         }
 
         async function bookRide() {
-            let name = document.getElementById('name').value;
-            let pickup = document.getElementById('pickup').value;
-            let drop = document.getElementById('drop').value;
-            let driverPhone = document.getElementById('driverSelect').value;
-            let seat = selectedSeat;
+            console.log("Button Clicked!"); // This shows in the 'Inspect' console
 
-            if (!name || !pickup || !drop || !seat) {
-                alert("Please fill in all details and pick a seat!");
+            var name = document.getElementById('name').value;
+            var pickup = document.getElementById('pickup').value;
+            var drop = document.getElementById('drop').value;
+            var driverPhone = document.getElementById('driverSelect').value;
+	    var phone = document.getElementById('phone').value;            
+	    var seatsString = selectedSeats.join(", ");
+
+            // Check if anything is missing
+            if (!name || !pickup || !drop || selectedSeats.length === 0) {
+                alert("PLEASE: Fill all fields and select at least one seat.");
                 return;
             }
 
+            var btn = document.getElementById('bookBtn');
+            btn.innerText = "SENDING...";
+            btn.disabled = true;
+
             try {
-                // Send to SheetDB
-                await fetch('https://sheetdb.io/api/v1/s9fmdpx1ku041', {
+                // Post to Google Sheets
+                var response = await fetch('https://sheetdb.io/api/v1/s9fmdpx1ku041', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
-                        data: [{ "Name": name, "Pickup": pickup, "Drop": drop, "Driver": driverPhone, "Seat": seat }]
+                        data: [{ 
+                            "Name": name, 
+                            "Pickup": pickup, 
+                            "Drop": drop, 
+                            "Driver": driverPhone, 
+                            "Seat": seatsString,
+			    "Phone":phone 
+                        }]
                     })
                 });
 
-                // Redirect to WhatsApp
-                let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${seat}`;
-                window.open(`https://wa.me/${driverPhone}?text=${encodeURIComponent(msg)}`, '_blank');
-                
+                if (response.ok) {
+                    var msg = "New Booking!%0AName: " + name + "%0APickup: " + pickup + "%0ADrop: " + drop + "%0ASeats: " + seatsString;
+                    window.location.href = "https://wa.me/" + driverPhone + "?text=" + msg;
+                } else {
+                    throw new Error("SheetDB Error");
+                }
+
             } catch (error) {
                 alert("Error: " + error.message);
+                btn.innerText = "Confirm Booking";
+                btn.disabled = false;
             }
         }
     </script>
 </body>
 </html>
-
