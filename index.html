@@ -2,6 +2,13 @@
 <html>
 <head>
     <title>Cab Booking</title>
+    <style>
+        body { font-family: sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; }
+        input, select, button { width: 100%; padding: 12px; margin: 8px 0; }
+        .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        .seat { padding: 15px; background: #ddd; text-align: center; cursor: pointer; border-radius: 5px; }
+        .seat.selected { background: #ffdd00; border: 2px solid #000; }
+    </style>
 </head>
 <body>
 
@@ -10,14 +17,16 @@
     <input type="text" id="pickup" placeholder="Pickup Location">
     <input type="text" id="drop" placeholder="Drop Location">
 
+    <label>Select Driver:</label>
     <select id="driverSelect">
         <option value="919103754740">Driver A</option>
         <option value="919123456789">Driver B</option>
     </select>
 
-    <div id="seat-container">
-        <button onclick="setSeat('Window Left')">Window Left</button>
-        <button onclick="setSeat('Window Right')">Window Right</button>
+    <label>Select Seat:</label>
+    <div class="seat-grid">
+        <div class="seat" onclick="selectSeat(this)">Window Left</div>
+        <div class="seat" onclick="selectSeat(this)">Window Right</div>
     </div>
 
     <button onclick="bookRide()">Confirm Booking</button>
@@ -25,31 +34,40 @@
     <script>
         let selectedSeat = "";
 
-        function setSeat(seatName) {
-            selectedSeat = seatName;
-            alert("Seat selected: " + seatName);
+        function selectSeat(element) {
+            document.querySelectorAll('.seat').forEach(s => s.classList.remove('selected'));
+            element.classList.add('selected');
+            selectedSeat = element.innerText.trim();
         }
 
         async function bookRide() {
-            let dataToSend = {
-                "Name": document.getElementById('name').value,
-                "Pickup": document.getElementById('pickup').value,
-                "Drop": document.getElementById('drop').value,
-                "Driver": document.getElementById('driverSelect').value,
-                "Seat": selectedSeat
-            };
+            let name = document.getElementById('name').value;
+            let pickup = document.getElementById('pickup').value;
+            let drop = document.getElementById('drop').value;
+            let driverPhone = document.getElementById('driverSelect').value;
+            let seat = selectedSeat;
 
-            // Send to SheetDB
-            let response = await fetch('https://sheetdb.io/api/v1/s9fmdpx1ku041', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ data: [dataToSend] })
-            });
+            if (!name || !pickup || !drop || !seat) {
+                alert("Please fill in all details and pick a seat!");
+                return;
+            }
 
-            if (response.ok) {
-                alert("Success! Data sent to Spreadsheet.");
-            } else {
-                alert("Error: Check your API connection.");
+            try {
+                // Send to SheetDB
+                await fetch('https://sheetdb.io/api/v1/s9fmdpx1ku041', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        data: [{ "Name": name, "Pickup": pickup, "Drop": drop, "Driver": driverPhone, "Seat": seat }]
+                    })
+                });
+
+                // Redirect to WhatsApp
+                let msg = `New Booking! Passenger: ${name}, Pickup: ${pickup}, Drop: ${drop}, Seat: ${seat}`;
+                window.open(`https://wa.me/${driverPhone}?text=${encodeURIComponent(msg)}`, '_blank');
+                
+            } catch (error) {
+                alert("Error: " + error.message);
             }
         }
     </script>
