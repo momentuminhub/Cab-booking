@@ -3,11 +3,24 @@
 <head>
     <title>Cab Booking</title>
     <style>
-        body { font-family: sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; }
-        input, select, button { width: 100%; padding: 12px; margin: 8px 0; }
-        .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
-        .seat { padding: 15px; background: #ddd; text-align: center; cursor: pointer; border-radius: 5px; }
-        .seat.selected { background: #ffdd00; border: 2px solid #000; }
+        /* Light grey background for the whole page */
+    body { font-family: sans-serif; max-width: 400px; margin: 20px auto; padding: 20px; background: #f4f4f4; }
+    
+    /* The white box that holds your form */
+    .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+    
+    input, select, button { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+    
+    /* Makes the inputs glow yellow when you tap them */
+    input:focus, select:focus { border: 2px solid #ffdd00; outline: none; }
+    
+    .seat-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+    .seat { padding: 15px; background: #eee; text-align: center; cursor: pointer; border-radius: 8px; font-weight: bold; transition: 0.3s; }
+    .seat.selected { background: #ffdd00; border: 2px solid #000; }
+    
+    button { background-color: #000; color: white; font-weight: bold; cursor: pointer; border: none; transition: 0.3s; }
+    button:hover { background-color: #333; }
+    button:disabled { background-color: #aaa; }
     </style>
 </head>
 <body>
@@ -73,3 +86,4 @@
     </script>
 </body>
 </html>
+
